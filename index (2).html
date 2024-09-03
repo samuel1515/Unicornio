@@ -1,0 +1,590 @@
+<html><head><base href="https://pro-chirp.social">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Chirp Pro - Advanced Social Networking</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --primary-color: #ff69b4;
+    --secondary-color: #ff1493;
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --tweet-bg: #1e1e1e;
+    --border-color: #2c2c2c;
+    --highlight-color: #303030;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding-bottom: 60px;
+  }
+  header {
+    background-color: rgba(18, 18, 18, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .logo {
+    width: 30px;
+    height: 30px;
+  }
+  .header-title {
+    font-size: 1.2em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .main-content {
+    padding: 15px;
+  }
+  .tweet-box {
+    background-color: var(--tweet-bg);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .tweet-input {
+    width: 100%;
+    height: 100px;
+    background-color: transparent;
+    color: var(--text-color);
+    border: none;
+    font-size: 1.1em;
+    resize: none;
+    margin-bottom: 10px;
+  }
+  .tweet-input:focus {
+    outline: none;
+  }
+  .tweet-button {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: 700;
+    font-size: 1em;
+    cursor: pointer;
+    float: right;
+    transition: all 0.3s ease;
+  }
+  .tweet-button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+  }
+  .tweet {
+    background-color: var(--tweet-bg);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .tweet:hover {
+    background-color: var(--highlight-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  .tweet-author {
+    font-weight: 700;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .verified-badge {
+    width: 18px;
+    height: 18px;
+    margin-left: 5px;
+  }
+  .tweet-content {
+    margin-top: 10px;
+    line-height: 1.5;
+    font-size: 1.05em;
+  }
+  .tweet-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .tweet-action {
+    color: #888;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    font-size: 0.9em;
+  }
+  .tweet-action:hover {
+    color: var(--primary-color);
+    transform: translateY(-2px);
+  }
+  .tweet-action i {
+    margin-right: 5px;
+    font-size: 1.1em;
+  }
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(18, 18, 18, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+    border-top: 1px solid var(--border-color);
+  }
+  .nav-item {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.4em;
+    transition: all 0.3s ease;
+  }
+  .nav-item.active {
+    color: var(--primary-color);
+  }
+  .nav-item:hover {
+    color: var(--secondary-color);
+    transform: translateY(-2px);
+  }
+  .profile-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+  }
+  .profile-modal-content {
+    background-color: var(--tweet-bg);
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+  }
+  .profile-form input[type="text"],
+  .profile-form input[type="color"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 1em;
+  }
+  .profile-form label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 500;
+  }
+  .profile-form button {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    border: none;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-weight: 700;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+  }
+  .profile-form button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  .close:hover,
+  .close:focus {
+    color: var(--primary-color);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .tab-content {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .tab-content.active {
+    display: block;
+    opacity: 1;
+  }
+  #search input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 25px;
+    border: 1px solid var(--border-color);
+    background-color: var(--tweet-bg);
+    color: var(--text-color);
+    font-size: 1em;
+    margin-bottom: 20px;
+  }
+  .notification, .message {
+    background-color: var(--tweet-bg);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+  }
+  .notification:hover, .message:hover {
+    background-color: var(--highlight-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  .loading-spinner {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="https://img.icons8.com/?size=100&id=iN0g7vo6cjHj&format=png&color=000000" alt="Black bird logo" class="logo" width="30" height="30">
+      <span class="header-title">Chirp Pro</span>
+      <i class="fas fa-user-circle" id="profile-icon" style="font-size: 1.4em; cursor: pointer;"></i>
+    </header>
+    
+    <main class="main-content">
+      <div id="home" class="tab-content active">
+        <div class="tweet-box">
+          <textarea class="tweet-input" placeholder="What's on your mind?"></textarea>
+          <button class="tweet-button">Chirp</button>
+        </div>
+        <div id="tweet-container">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+      
+      <div id="search" class="tab-content">
+        <h2>Discover</h2>
+        <input type="text" placeholder="Search Chirp Pro">
+        <div id="search-results"></div>
+      </div>
+      
+      <div id="notifications" class="tab-content">
+        <h2>Notifications</h2>
+        <div id="notifications-container"></div>
+      </div>
+      
+      <div id="messages" class="tab-content">
+        <h2>Messages</h2>
+        <div id="messages-container"></div>
+      </div>
+    </main>
+    
+    <nav class="bottom-nav">
+      <a href="#home" class="nav-item active"><i class="fas fa-home"></i></a>
+      <a href="#search" class="nav-item"><i class="fas fa-search"></i></a>
+      <a href="#notifications" class="nav-item"><i class="fas fa-bell"></i></a>
+      <a href="#messages" class="nav-item"><i class="fas fa-envelope"></i></a>
+    </nav>
+  </div>
+
+  <div id="profileModal" class="profile-modal">
+    <div class="profile-modal-content">
+      <span class="close">&times;</span>
+      <h2>Edit Profile</h2>
+      <form class="profile-form" id="profileForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <label for="verified">
+          <input type="checkbox" id="verified"> Verified Account
+        </label>
+        <label for="badgeColor">Verification Badge Color:</label>
+        <input type="color" id="badgeColor" value="#1DA1F2">
+        <button type="submit">Save Profile</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = {
+      username: "@user",
+      verified: false,
+      badgeColor: "#1DA1F2"
+    };
+
+    const tweetData = [
+      {
+        author: "@techguru",
+        verified: true,
+        badgeColor: "#00FF00",
+        content: "Just discovered Chirp Pro! The UI is incredibly smooth on my Android device. Impressive optimization! 👏 #AndroidDev #UX",
+        likes: 156,
+        rechirps: 48,
+        replies: 29
+      },
+      {
+        author: "@designmaster",
+        verified: true,
+        badgeColor: "#FFD700",
+        content: "The black and pink theme on Chirp Pro is absolutely stunning! It's a perfect blend of elegance and modernity. 🎨✨ #UIDesign #MobileApp",
+        likes: 232,
+        rechirps: 71,
+        replies: 43
+      },
+      {
+        author: "@nightowl",
+        verified: false,
+        badgeColor: "",
+        content: "Chirp Pro's dark theme is a lifesaver for my late-night scrolling sessions. Easy on the eyes and battery-friendly! 🌙📱 #NightMode #UserExperience",
+        likes: 302,
+        rechirps: 91,
+        replies: 54
+      },
+      {
+        author: "@productivityguru",
+        verified: true,
+        badgeColor: "#1DA1F2",
+        content: "The intuitive layout of Chirp Pro has significantly improved my social media workflow. Kudos to the team for prioritizing efficiency! 🚀 #Productivity #AppDesign",
+        likes: 189,
+        rechirps: 63,
+        replies: 37
+      },
+      {
+        author: "@securityexpert",
+        verified: true,
+        badgeColor: "#FF4500",
+        content: "Impressed by Chirp Pro's commitment to user privacy and data protection. It's refreshing to see a social platform taking these issues seriously. 🛡️ #Cybersecurity #Privacy",
+        likes: 275,
+        rechirps: 88,
+        replies: 51
+      }
+    ];
+
+    function createVerifiedBadge(color) {
+      return `
+        <svg class="verified-badge" viewBox="0 0 24 24" aria-label="Verified account" fill="${color}">
+          <g>
+            <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z"></path>
+          </g>
+        </svg>
+      `;
+    }
+
+    function createTweetElement(tweet) {
+      return `
+        <div class="tweet">
+          <span class="tweet-author">
+            ${tweet.author}
+            ${tweet.verified ? createVerifiedBadge(tweet.badgeColor) : ''}
+          </span>
+          <p class="tweet-content">${tweet.content}</p>
+          <div class="tweet-actions">
+            <a href="#" class="tweet-action"><i class="far fa-heart"></i>${tweet.likes}</a>
+            <a href="#" class="tweet-action"><i class="fas fa-retweet"></i>${tweet.rechirps}</a>
+            <a href="#" class="tweet-action"><i class="far fa-comment"></i>${tweet.replies}</a>
+            <a href="#" class="tweet-action"><i class="far fa-share-square"></i></a>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTweets() {
+      const tweetContainer = document.getElementById('tweet-container');
+      tweetContainer.innerHTML = '<div class="loading-spinner"></div>';
+      setTimeout(() => {
+        tweetContainer.innerHTML = tweetData.map(createTweetElement).join('');
+      }, 1000);
+    }
+
+    renderTweets();
+
+    document.querySelector('.tweet-button').addEventListener('click', function() {
+      const tweetContent = document.querySelector('.tweet-input').value;
+      if (tweetContent.trim() !== '') {
+        const newTweet = {
+          author: currentUser.username,
+          verified: currentUser.verified,
+          badgeColor: currentUser.badgeColor,
+          content: tweetContent,
+          likes: 0,
+          rechirps: 0,
+          replies: 0
+        };
+        tweetData.unshift(newTweet);
+        renderTweets();
+        document.querySelector('.tweet-input').value = '';
+      }
+    });
+
+    // Profile Modal
+    const modal = document.getElementById("profileModal");
+    const profileIcon = document.getElementById("profile-icon");
+    const span = document.getElementsByClassName("close")[0];
+    const profileForm = document.getElementById("profileForm");
+
+    profileIcon.onclick = function() {
+      modal.style.display = "block";
+      document.getElementById("username").value = currentUser.username;
+      document.getElementById("verified").checked = currentUser.verified;
+      document.getElementById("badgeColor").value = currentUser.badgeColor;
+    }
+
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    profileForm.onsubmit = function(e) {
+      e.preventDefault();
+      currentUser = {
+        username: document.getElementById("username").value,
+        verified: document.getElementById("verified").checked,
+        badgeColor: document.getElementById("badgeColor").value
+      };
+      modal.style.display = "none";
+      renderTweets();
+    }
+
+    // Tab Navigation
+    const navItems = document.querySelectorAll('.nav-item');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    navItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        
+        navItems.forEach(navItem => navItem.classList.remove('active'));
+        this.classList.add('active');
+        
+        tabContents.forEach(content => {
+          content.classList.remove('active');
+          content.style.display = 'none';
+        });
+        const activeTab = document.getElementById(targetId);
+        activeTab.style.display = 'block';
+        setTimeout(() => activeTab.classList.add('active'), 50);
+        
+        document.querySelector('.header-title').textContent = targetId.charAt(0).toUpperCase() + targetId.slice(1);
+
+        // Load content for each tab
+        if (targetId === 'search') {
+          loadSearchResults();
+        } else if (targetId === 'notifications') {
+          loadNotifications();
+        } else if (targetId === 'messages') {
+          loadMessages();
+        }
+      });
+    });
+
+    function loadSearchResults() {
+      const searchResults = document.getElementById('search-results');
+      searchResults.innerHTML = '<div class="loading-spinner"></div>';
+      setTimeout(() => {
+        searchResults.innerHTML = `
+          <div class="tweet">
+            <span class="tweet-author">@trendingtopic</span>
+            <p class="tweet-content">#ChirpPro is trending! Users are loving the new interface and features.</p>
+          </div>
+          <div class="tweet">
+            <span class="tweet-author">@newsupdate</span>
+            <p class="tweet-content">Breaking: Chirp Pro reaches 1 million active users in its first month!</p>
+          </div>
+        `;
+      }, 1000);
+    }
+
+    function loadNotifications() {
+      const notificationsContainer = document.getElementById('notifications-container');
+      notificationsContainer.innerHTML = '<div class="loading-spinner"></div>';
+      setTimeout(() => {
+        notificationsContainer.innerHTML = `
+          <div class="notification">
+            <p><strong>@techguru</strong> and 50 others liked your chirp</p>
+          </div>
+          <div class="notification">
+            <p><strong>@designmaster</strong> started following you</p>
+          </div>
+          <div class="notification">
+            <p>Your chirp was rechirped 100 times!</p>
+          </div>
+        `;
+      }, 1000);
+    }
+
+    function loadMessages() {
+      const messagesContainer = document.getElementById('messages-container');
+      messagesContainer.innerHTML = '<div class="loading-spinner"></div>';
+      setTimeout(() => {
+        messagesContainer.innerHTML = `
+          <div class="message">
+            <p><strong>@friend1:</strong> Hey! Loving the new Chirp Pro app. Want to grab coffee and chat about it?</p>
+          </div>
+          <div class="message">
+            <p><strong>@colleague:</strong> Great job on your recent project! Let's collaborate on Chirp Pro.</p>
+          </div>
+        `;
+      }, 1000);
+    }
+
+    // Add touch feedback to buttons and nav items
+    const buttons = document.querySelectorAll('button, .nav-item');
+    buttons.forEach(button => {
+      button.addEventListener('touchstart', function() {
+        this.style.opacity = '0.7';
+      });
+      button.addEventListener('touchend', function() {
+        this.style.opacity = '1';
+      });
+    });
+
+    // Prevent zoom on double tap
+    document.addEventListener('dblclick', function(event) {
+      event.preventDefault();
+    }, { passive: false });
+  </script>
+</body>
+</html>
